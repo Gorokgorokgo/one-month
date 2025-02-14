@@ -13,11 +13,15 @@
 ## AOP (Aspect-Oriented Programming, 관점 지향 프로그래밍)
 - 메서드 실행 전/후에 특정 로직을 삽입할 수 있는 방식
 - 주로 트랜잭션 관리, 로깅, 권한 검사 등에 사용됨
-- Filter, Interceptor와 다르게 Spring Bean 내부의 메서드 실행을 가로챌 수 있음
+- Filter, Interceptor와 다르게 Spring Bean 내부의 메서드 실행을 가로챌 수 있음  
 
+
+    
 
 ---
 
+  
+  
 
 | 비교 항목       | Filter                         | Interceptor                  | AOP (Aspect-Oriented Programming) |
 |---------------|--------------------------------|------------------------------|----------------------------------|
@@ -27,7 +31,10 @@
 | **사용 방법**  | `javax.servlet.Filter` 구현   | `HandlerInterceptor` 구현    | `@Aspect` 및 `@Around` 사용    |
 | **실행 순서**  | 클라이언트 → Filter → DispatcherServlet → Interceptor → Controller | 클라이언트 → DispatcherServlet → Interceptor → Controller | AOP는 메서드 실행을 가로채서 동작 |
 
-
+---
+### Spring Security란?
+- Spring 기반 애플리케이션의 보안을 관리하는 프레임 워크  
+  -> 로그인, 인증(사용자 확인), 인가(권한 확인), 요청 검사, 세션 관리등을 자동으로 처리해줌
 ---
 
 ### JWT란 (Json Web Token)
