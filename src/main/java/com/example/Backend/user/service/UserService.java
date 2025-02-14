@@ -1,16 +1,22 @@
 package com.example.Backend.user.service;
 
+import com.example.Backend.auth.dto.response.AuthorityResponse;
 import com.example.Backend.auth.service.JwtSecurityAuth;
 import com.example.Backend.user.dto.request.LoginRequest;
 import com.example.Backend.user.dto.request.SignupRequest;
 import com.example.Backend.user.dto.response.LoginResponse;
 import com.example.Backend.user.dto.response.SignupResponse;
 import com.example.Backend.user.entity.User;
+import com.example.Backend.user.entity.UserRole;
 import com.example.Backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -26,10 +32,18 @@ public class UserService {
 
     String encodedPassword = passwordEncoder.encode(signupRequest.getPassword());
 
+    Set<UserRole> roles = new HashSet<>();
+    roles.add(UserRole.ROLE_USER);
+
     // 유저(회원) 생성
-    User newUser = new User(signupRequest.getUsername(), signupRequest.getEmail(), encodedPassword);
+    User newUser = new User(signupRequest.getUsername(), signupRequest.getNickname(), encodedPassword, roles);
+
+    List<AuthorityResponse> authorities = newUser.getRoles().stream()
+        .map(role -> new AuthorityResponse(role.name())) // 예: ROLE_USER, ROLE_ADMIN
+        .toList();
+
     userRepository.save(newUser);
-    return new SignupResponse(newUser.getEmail(), newUser.getPassword()); //회원 저장
+    return new SignupResponse(newUser.getUsername(), newUser.getNickname(), authorities); //회원 저장
   }
 
   @Transactional
