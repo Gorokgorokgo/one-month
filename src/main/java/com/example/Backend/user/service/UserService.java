@@ -11,8 +11,10 @@ import com.example.Backend.user.entity.UserRole;
 import com.example.Backend.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -51,11 +53,11 @@ public class UserService {
 
     // 사용자 정보 조회
     User user = userRepository.findByUsername(loginRequest.getUsername())
-        .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유저를 찾을 수 없습니다."));
 
     // 2. 비밀번호 비교
     if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-      throw new RuntimeException("잘못된 비밀번호입니다.");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "잘못된 비밀번호입니다.");
     }
 
     // 3. 액세스 토큰 생성
