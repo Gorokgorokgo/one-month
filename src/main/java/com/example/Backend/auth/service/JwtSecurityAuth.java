@@ -1,38 +1,50 @@
-package com.example.Backend;
+package com.example.Backend.auth.service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Optional;
 
-import com.example.Backend.entity.RefreshToken;
-import com.example.Backend.repository.RefreshTokenRepository;
+import com.example.Backend.auth.entity.RefreshToken;
+import com.example.Backend.auth.repository.RefreshTokenRepository;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
 @Component
 public class JwtSecurityAuth {
 
-  private static final String SECRET_KEY = "Temp-Enghlish-Spelling";
+  @Value("${jwt.secret}")
+  private String secretKey;
+
   private static final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 30; // 30분
   private static final long REFRESH_TOKEN_EXPIRATION = 1000 * 60 * 60 * 24 * 7; // 7일
 
-  private final SecretKey key;
+  private SecretKey key;
 
   @Autowired
-  private RefreshTokenRepository refreshTokenRepository; // RefreshToken 관리하는 레포지토리
+  private RefreshTokenRepository refreshTokenRepository;
 
-  public JwtSecurityAuth() {
-    this.key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+  @PostConstruct
+  public void init() {
+    System.out.println("Loaded secretKey: " + secretKey);
+    try {
+      if (secretKey == null || secretKey.isEmpty()) {
+        throw new IllegalStateException("JWT secret key가 없음.");
+      }
+      this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+    } catch (Exception e) {
+      System.err.println("JWT secret key 초기화 중 오류 발생: " + e.getMessage());
+      throw new RuntimeException("JWT 초기화 실패", e);
+    }
   }
-
   // Access Token과 Refresh Token 생성
   public String generateToken(String username, boolean isAccessToken) {
     long expiration = isAccessToken ? ACCESS_TOKEN_EXPIRATION : REFRESH_TOKEN_EXPIRATION;

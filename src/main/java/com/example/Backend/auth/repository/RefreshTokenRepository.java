@@ -1,7 +1,7 @@
-package com.example.Backend.repository;
+package com.example.Backend.auth.repository;
 
 
-import com.example.Backend.entity.RefreshToken;
+import com.example.Backend.auth.entity.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
