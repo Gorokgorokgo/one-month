@@ -57,8 +57,6 @@
 | AT01 | 올바른 로그인 시 JWT 발급 | 유효한 사용자 ID, PW | Access & Refresh Token 반환 |
 | AT02 | 잘못된 비밀번호 입력 시 실패 | 잘못된 PW | 401 Unauthorized 반환 |
 | AT03 | 존재하지 않는 사용자로 요청 | 미등록 ID | 401 Unauthorized 반환 |
-| AT04 | Refresh Token 없이 요청 | 없음 | 401 Unauthorized 반환 |
-| AT05 | Access Token 없이 요청 | 없음 | 401 Unauthorized 반환 |
 
 ---
 
@@ -74,8 +72,7 @@
 | AC01 | 유효한 Access Token 검증 | 정상적인 Access Token | 200 OK 반환 |
 | AC02 | 만료된 Access Token 검증 | 만료된 Token | 401 Unauthorized 반환 |
 | AC03 | 변조된 Access Token 검증 | 위·변조된 Token | 401 Unauthorized 반환 |
-| AC04 | 서명이 없는 Access Token | 서명 제거된 Token | 401 Unauthorized 반환 |
-| AC05 | 잘못된 형식의 Access Token | 이상한 값 | 400 Bad Request 반환 |
+
 
 ---
 
@@ -90,39 +87,8 @@
 | RT01 | 유효한 Refresh Token으로 재발급 | 정상적인 Refresh Token | 새로운 Access Token 반환 |
 | RT02 | 만료된 Refresh Token으로 재발급 시도 | 만료된 Refresh Token | 401 Unauthorized 반환 |
 | RT03 | 변조된 Refresh Token으로 재발급 시도 | 위·변조된 Token | 401 Unauthorized 반환 |
-| RT04 | Refresh Token 없이 요청 | 없음 | 400 Bad Request 반환 |
-| RT05 | 이미 사용된 Refresh Token으로 요청 | 사용된 Token | 401 Unauthorized 반환 및 로그아웃 처리 |
 
 ---
-
-## 4️⃣ 로그아웃 및 토큰 블랙리스트 테스트  
-**🎯 시나리오:**  
-- 사용자가 로그아웃하면 해당 Refresh Token이 차단되는지 검증  
-
-**📝 테스트 케이스:**  
-
-| 테스트 ID | 설명 | 입력 값 | 예상 결과 |
-|----------|------|---------|-----------|
-| LO01 | 정상적인 로그아웃 | Refresh Token | Refresh Token 삭제 및 블랙리스트 추가 |
-| LO02 | 로그아웃 후 같은 Refresh Token 사용 | 블랙리스트된 Token | 401 Unauthorized 반환 |
-| LO03 | 만료된 Refresh Token으로 로그아웃 요청 | 만료된 Token | 400 Bad Request 반환 |
-| LO04 | Access Token만으로 로그아웃 요청 | Access Token만 제공 | 400 Bad Request 반환 |
-
----
-
-## 5️⃣ Token 저장 방식 및 보안 관련 테스트  
-**🎯 시나리오:**  
-- 토큰이 안전하게 저장되고, 취약점이 없는지 검증  
-
-**📝 테스트 케이스:**  
-
-| 테스트 ID | 설명 | 입력 값 | 예상 결과 |
-|----------|------|---------|-----------|
-| SEC01 | HTTP Only & Secure Cookie 설정 확인 | 로그인 요청 후 쿠키 확인 | 쿠키에 `HttpOnly` & `Secure` 속성 존재 |
-| SEC02 | Refresh Token이 로컬 스토리지에 저장되지 않음 | 로그인 후 브라우저 확인 | Refresh Token이 LocalStorage에 없음 |
-| SEC03 | CSRF 보호 기능 확인 | 의도적 CSRF 공격 요청 | 403 Forbidden 반환 |
-| SEC04 | 토큰 탈취 후 재사용 테스트 | 탈취된 Token으로 요청 | 401 Unauthorized 및 블랙리스트 처리 |
-
 
 
 
