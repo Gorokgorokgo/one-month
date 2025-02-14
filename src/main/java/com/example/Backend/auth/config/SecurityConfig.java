@@ -4,6 +4,8 @@ import com.example.Backend.auth.service.JwtAuthenticationFilter;
 import com.example.Backend.auth.service.JwtSecurityAuth;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,7 +28,9 @@ public class SecurityConfig {
     http.csrf(csrf -> csrf.disable())
         .addFilterBefore(new JwtAuthenticationFilter(jwtSecurityAuth), UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/signup").permitAll()  // 회원가입은 누구나 접근 가능
+            .requestMatchers(
+                "/api/signup",
+                "api/login").permitAll()  // 회원가입은 누구나 접근 가능
             .anyRequest().authenticated()                    // 그 외의 요청은 인증이 필요
         );
 
